@@ -30,7 +30,7 @@ app.use(function (err, req, res, next) {
   if (err.name === "UnauthorizedError") {
     res
       .status(401)
-      .json({ result: null, success: false, msg: "Invalid or expired token" });
+      .json({ result: null, success: false, msg: "Invalid API key" });
   }
 });
 
