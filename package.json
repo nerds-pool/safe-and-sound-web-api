@@ -1,0 +1,23 @@
+{
+  "name": "safe_and_sound_api",
+  "version": "0.1.0",
+  "description": "Web API that allows to track geographical movements of the citizens",
+  "main": "api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nerds-pool/safe-and-sound-web-api.git"
+  },
+  "keywords": [
+    "web-api",
+    "covid-19"
+  ],
+  "author": "Team Nerds Pool",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nerds-pool/safe-and-sound-web-api/issues"
+  },
+  "homepage": "https://github.com/nerds-pool/safe-and-sound-web-api#readme"
+}
