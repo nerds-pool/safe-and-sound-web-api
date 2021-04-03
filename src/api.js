@@ -6,7 +6,7 @@ const path = require("path");
 const serverless = require("serverless-http");
 
 require("dotenv").config({ path: "./config/.env" });
-// require("./db/connect");
+require("./db/connect");
 
 // Init express app
 const app = express();
