@@ -11,8 +11,8 @@ const jwt = require("jsonwebtoken");
 exports.signJWT = (payload) => {
   try {
     const token = jwt.sign(payload, process.env.SIGN_TOKEN_SECRET, {
-      expiresIn: "5m",
-      issuer: "tell.com",
+      expiresIn: "1y",
+      issuer: "nerds-pool",
     });
     if (!token)
       throw new Error("Something went wrong inside JWT engine when sign");
