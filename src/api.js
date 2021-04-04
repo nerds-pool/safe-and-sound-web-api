@@ -24,6 +24,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 const baseRoute = "/.netlify/functions/api";
+const authRoute = require("./routes/auth.route");
+const userRoute = require("./routes/user.route");
+const visitRoute = require("./routes/visit.route");
+
+app.use(`${baseRoute}/auth`, authRoute);
+app.use(`${baseRoute}/user`, userRoute);
+app.use(`${baseRoute}/visit`, visitRoute);
 
 /** Unauthorized error handler */
 app.use(function (err, req, res, next) {
