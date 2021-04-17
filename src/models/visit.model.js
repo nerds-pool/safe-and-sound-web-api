@@ -8,13 +8,8 @@ const visitSchema = new mongoose.Schema(
       ref: "User",
     },
     location: {
-      type: {
-        type: String,
-        enum: ["Point"],
-      },
-      coordinates: {
-        type: [Number],
-      },
+      type: Object,
+      ref: "Location",
     },
     arrival: Date,
     departure: Date,

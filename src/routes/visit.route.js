@@ -13,7 +13,8 @@ const { isSignedIn, isCDC } = require("../controllers/auth.controller");
  * @name get/fetchVisitAssociatesByUserNic
  * @example {base-url}/visit?nic=19942356921&date="2021-04-01T17:28:41.034Z"&arr="2021-04-01T17:28:41.034Z"&dep="2021-04-01T17:58:09.032Z"
  */
-router.get("/", isSignedIn, isCDC, visit.getVisitAssociatesByUserNic);
+router.get("/:id", visit.getVisitAssociatesByUserNic);
+// isSignedIn, isCDC, <- put these middleware before controller
 
 /**
  * Add a visited location [USER]
