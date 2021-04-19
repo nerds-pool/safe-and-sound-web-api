@@ -32,12 +32,34 @@ exports.getUser = (req, res, next, nic) => {
  * Fetch a user by nic [CDC|PHI]
  * @param {object} req HTTP request
  * @param {object} res HTTP response
- * @async
+ * @asyn
  * @returns {object} HTTP response
  */
 exports.getUserByNic = async (req, res) => {
   try {
-  } catch (error) {}
+    const { result, success } = await User(
+      req.params.nic
+    );
+    if (!success) {
+      return res.status(400).json({
+        result,
+        success,
+        msg: "Error on my end with request",
+      });
+    }
+    return res.status(200).json({
+      result,
+      success,
+      msg: "OK",
+    });
+
+  } catch (error) {
+    return res.status(500).jason({
+      msg:"Internal server error on getSerbyId",
+      err:error.message,
+      success:false,
+    });
+  }
 };
 
 /**
@@ -49,6 +71,7 @@ exports.getUserByNic = async (req, res) => {
  */
 exports.getCovidPositiveUsers = async (req, res) => {
   try {
+    
   } catch (error) {}
 };
 
