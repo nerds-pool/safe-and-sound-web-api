@@ -99,9 +99,3 @@ exports.deleteUserByNic = async (req, res) => {
   } catch (error) {}
 };
 
- module.exports = {
-deleteUserByNic,
-updateUserHealthStatus,
-getCovidPositiveUsers,
-getUserByNic,
-};
