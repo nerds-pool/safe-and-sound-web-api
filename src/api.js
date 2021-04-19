@@ -27,10 +27,12 @@ const baseRoute = "/.netlify/functions/api";
 const authRoute = require("./routes/auth.route");
 const userRoute = require("./routes/user.route");
 const visitRoute = require("./routes/visit.route");
+const locationRoute = require("./routes/location.route");
 
 app.use(`${baseRoute}/auth`, authRoute);
 app.use(`${baseRoute}/user`, userRoute);
 app.use(`${baseRoute}/visit`, visitRoute);
+app.use(`${baseRoute}/location`,locationRoute);
 
 /** Unauthorized error handler */
 app.use(function (err, req, res, next) {
