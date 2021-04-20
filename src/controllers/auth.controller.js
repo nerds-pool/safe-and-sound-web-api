@@ -6,7 +6,7 @@
 
 const expressJwt = require("express-jwt");
 const User = require("../models/user.model");
-const {body, validationResult} = require('express-validator')
+const { body, validationResult } = require('express-validator')
 /**
  * Sign up user to api [USER]
  * @param {object} req HTTP request
@@ -14,35 +14,45 @@ const {body, validationResult} = require('express-validator')
  * @async
  * @returns {object} HTTP response
  */
- exports.signup = async (req, res) => {
+exports.signup = async (req, res) => {
+  // check for user's existence
+  User.findOne({ email: req.body.email }).exec((error, user) => {
+    if (user) {
+      return console.log("user already exist")
+    }
+    if (error) {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const { name, nic, dob, email, password, profession, affliation, healthStatus, role } = req.body;
 
-  const errors = validationResult(req);
-  if(!errors.isEmpty()){
-    return res.status(400).json({errors: errors.array()});
-  }
-  const {name, nic, dob, email, password,profession, affliation, healthStatus} = req.body;
+      const user = new User({
+        name,
+        nic,
+        dob,
+        email,
+        password,
+        profession,
+        affliation,
+        healthStatus,
+        role
+      });
 
-  const user = new User({
-    name: name,
-    nic : nic,
-    dob : dob,
-    email : email,
-    password: password,
-    profession: profession,
-    affliation: affliation,
-    healthStatus: healthStatus
+      user.save((err, user) => {
+        if (err) {
+          res.status(400).json({
+            err: 'User cannot be created'
+          })
+        }
+        else {
+          res.json(user)
+          console.log("User created successfully")
+        }
+      });
+    }
   });
 
-  user.save((err,user)=>{
-    if(err){
-      res.status(400).json({
-        err: 'User cannot be created'
-      })
-    }
-    else{
-      res.json(user)
-    }
-  });
 };
 
 /**
@@ -61,7 +71,7 @@ exports.signin = async (req, res) => {
     if (!user) throw new Error("Email is not valid or not a registered user");
     if (!user.authenticate(password)) throw new Error("Password is not valid");
 
-    const signedRes = signJWT({ id: user._id}); // <- Create the sign token
+    const signedRes = signJWT({ id: user._id }); // <- Create the sign token
     if (!signedRes.success)
       return { result: signedRes.result, success: signedRes.success };
     const signToken = signedRes.result;
