@@ -13,9 +13,30 @@ const User = require("../models/user.model");
  * @async
  * @returns {object} HTTP response
  */
-exports.signup = async (req, res) => {
-  try {
-  } catch (error) {}
+ exports.signup = async (req, res) => {
+  const {name, nic, dob, email, password,profession, affliation, healthStatus} = req.body;
+
+  const user = new User({
+    name: name,
+    nic : nic,
+    dob : dob,
+    email : email,
+    password: password,
+    profession: profession,
+    affliation: affliation,
+    healthStatus: healthStatus
+  });
+
+  user.save((err,user)=>{
+    if(err){
+      res.status(400).json({
+        err: 'User cannot be created'
+      })
+    }
+    else{
+      res.json(user)
+    }
+  });
 };
 
 /**
