@@ -53,8 +53,35 @@ const {body, validationResult} = require('express-validator')
  * @returns {object} HTTP response
  */
 exports.signin = async (req, res) => {
+  const { email, password } = payload;
+
   try {
-  } catch (error) {}
+    const user = await User.findOne({ email });
+
+    if (!user) throw new Error("Email is not valid or not a registered user");
+    if (!user.authenticate(password)) throw new Error("Password is not valid");
+
+    const signedRes = signJWT({ id: user._id}); // <- Create the sign token
+    if (!signedRes.success)
+      return { result: signedRes.result, success: signedRes.success };
+    const signToken = signedRes.result;
+
+    const refreshRes = refreshJWT({ id: user._id, role: user.role }); // <- Create the refresh token
+    if (!refreshRes.success)
+      return { result: refreshRes.result, success: refreshRes.success };
+    const refToken = refreshRes.result;
+
+    return {
+      result: {
+        id: user._id,
+        signToken,
+        refToken,
+      },
+      success: true,
+    };
+  } catch (error) {
+    return { result: error.message, success: false };
+  }
 };
 
 /**
