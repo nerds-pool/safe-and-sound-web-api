@@ -1,11 +1,12 @@
 /**
  * @module controller/auth
  * @requires module:model/user
+ * @library express-validator
  */
 
 const expressJwt = require("express-jwt");
 const User = require("../models/user.model");
-
+const {body, validationResult} = require('express-validator')
 /**
  * Sign up user to api [USER]
  * @param {object} req HTTP request
@@ -14,6 +15,11 @@ const User = require("../models/user.model");
  * @returns {object} HTTP response
  */
  exports.signup = async (req, res) => {
+
+  const errors = validationResult(req);
+  if(!errors.isEmpty()){
+    return res.status(400).json({errors: errors.array()});
+  }
   const {name, nic, dob, email, password,profession, affliation, healthStatus} = req.body;
 
   const user = new User({
