@@ -37,7 +37,7 @@ exports.getUser = (req, res, next, nic) => {
  */
 exports.getUserByNic = async (req, res) => {
   try {
-    const { result, success } = await User(
+    const { result, success } = await getUser(
       req.params.nic
     );
     if (!success) {
@@ -71,8 +71,29 @@ exports.getUserByNic = async (req, res) => {
  */
 exports.getCovidPositiveUsers = async (req, res) => {
   try {
-    
-  } catch (error) {}
+    const { result, success } = await User(
+      
+    );
+    if (!success) {
+      return res.status(400).json({
+        result,
+        success,
+        msg: "Error on my end with request",
+      });
+    }
+    return res.status(200).json({
+      result,
+      success,
+      msg: "OK",
+    });
+
+  } catch (error) {
+    return res.status(500).jason({
+      msg:"Internal server error on getSerbyId",
+      err:error.message,
+      success:false,
+    });
+  }
 };
 
 /**
