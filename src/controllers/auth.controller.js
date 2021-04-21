@@ -1,12 +1,13 @@
 /**
  * @module controller/auth
  * @requires module:model/user
+ * @requires module:helpers/JWTEngine
  * @library express-validator
  */
 
-const expressJwt = require("express-jwt");
 const User = require("../models/user.model");
-const { body, validationResult } = require('express-validator')
+const { validationResult } = require("express-validator");
+const { signJWT } = require("../helpers/JWTEngine");
 /**
  * Sign up user to api [USER]
  * @param {object} req HTTP request
@@ -15,43 +16,38 @@ const { body, validationResult } = require('express-validator')
  * @returns {object} HTTP response
  */
 exports.signup = async (req, res) => {
-  // check for user's existence
-  User.findOne({ email: req.body.email }).exec((error, user) => {
-    if (user) {
-      return console.log("user already exist")
-    }
-    if (error) {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-      const { name, nic, dob, email, password, profession, affliation, healthStatus, role } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({
+      result: errors.array(),
+      success: false,
+      msg: "validation failed",
+    });
+  }
 
-      const user = new User({
-        name,
-        nic,
-        dob,
-        email,
-        password,
-        profession,
-        affliation,
-        healthStatus,
-        role
+  const user = new User(req.body);
+
+  try {
+    const result = await user.save();
+
+    if (!result)
+      return res.status(400).json({
+        result: result,
+        success: false,
+        msg: "Sign up failed",
       });
-
-      user.save((err, user) => {
-        if (err) {
-          res.status(400).json({
-            err: 'User cannot be created'
-          })
-        }
-        else {
-          res.json("User created successfully", user,)
-        }
-      });
-    }
-  });
-
+    return res.status(200).json({
+      result: result._id,
+      success: true,
+      msg: "Sign up success",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      result: error.message,
+      success: false,
+      msg: "Internal server error",
+    });
+  }
 };
 
 /**
@@ -62,34 +58,49 @@ exports.signup = async (req, res) => {
  * @returns {object} HTTP response
  */
 exports.signin = async (req, res) => {
-  const { email, password } = payload;
+  const { nic, password } = payload;
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ nic });
 
-    if (!user) throw new Error("Email is not valid or not a registered user");
-    if (!user.authenticate(password)) throw new Error("Password is not valid");
+    if (!user || !user.authenticate(password))
+      return res.status(401).json({
+        result: null,
+        success: false,
+        msg: "Invalid username or password",
+      });
 
-    const signedRes = signJWT({ id: user._id }); // <- Create the sign token
-    if (!signedRes.success)
-      return { result: signedRes.result, success: signedRes.success };
-    const signToken = signedRes.result;
+    const response = signJWT({
+      id: user._id,
+      nic: user.nic,
+      role: user.role,
+    });
 
-    const refreshRes = refreshJWT({ id: user._id, role: user.role }); // <- Create the refresh token
-    if (!refreshRes.success)
-      return { result: refreshRes.result, success: refreshRes.success };
-    const refToken = refreshRes.result;
+    if (!response.success)
+      return res.status(422).json({
+        result: null,
+        success: false,
+        msg: "Error while creating the signed token",
+      });
 
-    return {
+    const signToken = response.result;
+
+    return res.status(422).json({
       result: {
         id: user._id,
+        nic: user.nic,
+        role: user.role,
         signToken,
-        refToken,
       },
       success: true,
-    };
+      msg: "Signin success",
+    });
   } catch (error) {
-    return { result: error.message, success: false };
+    return res.status(500).json({
+      result: error.message,
+      success: false,
+      msg: "Internal server error",
+    });
   }
 };
 
@@ -114,7 +125,7 @@ exports.isNicExist = (req, res, next) => {
     })
     .catch((err) =>
       res.status(500).json({
-        result: err,
+        result: err.message,
         success: false,
         msg: "Internal server error",
         devmsg: "Internal server error @activateAccountController",

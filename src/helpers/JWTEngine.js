@@ -11,7 +11,6 @@ const jwt = require("jsonwebtoken");
 exports.signJWT = (payload) => {
   try {
     const token = jwt.sign(payload, process.env.SIGN_TOKEN_SECRET, {
-      expiresIn: "1y",
       issuer: "nerds-pool",
     });
     if (!token)
