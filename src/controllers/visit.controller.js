@@ -17,8 +17,44 @@ const Location = require("../models/location.model");
  * @returns {object} HTTP response
  */
 exports.addVisitedLocation = async (req, res) => {
+  const { user, location, arrival, departure } = req.body;
+
   try {
-  } catch (error) {}
+    const locationRes = await Location.findById(location);
+    if (!locationRes)
+      return res.status(422).json({
+        result: null,
+        success: false,
+        msg: "Invalid location id",
+      });
+
+    const visit = new Visit({
+      user,
+      location,
+      arrival,
+      departure,
+    });
+
+    const result = await visit.save();
+    if (!result)
+      return res.status(400).json({
+        result: null,
+        success: false,
+        msg: "Location update failed",
+      });
+
+    return res.status(200).json({
+      result,
+      success: true,
+      msg: "Location update success",
+    });
+  } catch (error) {
+    return res.status(500).jason({
+      result: error.message,
+      success: false,
+      msg: "Internal server error",
+    });
+  }
 };
 
 /**
@@ -29,9 +65,15 @@ exports.addVisitedLocation = async (req, res) => {
  * @returns {object} HTTP response
  */
 exports.getVisitAssociatesByUserNic = async (req, res) => {
+  if (!req.profile)
+    return res.status(400).json({
+      result: null,
+      success: false,
+      msg: "Invalid request",
+    });
   try {
     // Extract user id
-    const id = req.params.id;
+    const { id } = req.profile;
     let associates = [];
     let associateArray = [];
 
@@ -82,17 +124,17 @@ exports.getVisitAssociatesByUserNic = async (req, res) => {
       return res.status(422).json({
         result: null,
         success: false,
-        message: "Associates fetch failed",
+        message: "Trace Associates failed",
       });
 
     return res
       .status(200)
-      .json({ result, success: true, message: "Associates fetch succeeded" });
+      .json({ result, success: true, message: "Trace Associates success" });
   } catch (error) {
     res.status(500).json({
       result: error.message,
       success: false,
-      message: "Internal server error while fetching associates",
+      message: "Internal server error",
     });
   }
 };
