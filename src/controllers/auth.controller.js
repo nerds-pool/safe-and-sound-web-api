@@ -85,7 +85,7 @@ exports.signin = async (req, res) => {
 
     const signToken = response.result;
 
-    return res.status(422).json({
+    return res.status(200).json({
       result: {
         id: user._id,
         nic: user.nic,
