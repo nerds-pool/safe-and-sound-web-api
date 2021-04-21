@@ -46,8 +46,7 @@ exports.signup = async (req, res) => {
           })
         }
         else {
-          res.json(user)
-          console.log("User created successfully")
+          res.json("User created successfully", user,)
         }
       });
     }
