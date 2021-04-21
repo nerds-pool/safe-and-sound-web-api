@@ -16,22 +16,22 @@ const { check } = require("express-validator");
  */
 router.post(
   "/signup",
-  [
-    check("name")
-      .isEmpty()
-      .not()
-      .matches(
-        /^([a-zA-Z]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)/
-      )
-      .withMessage("invalid name"),
-    check("nic").isEmpty().not().withMessage("invalid nic"),
-    check("email").isEmail().withMessage("invalid email"),
-    check("password")
-      .isEmpty()
-      .isLength({ min: 5 })
-      .withMessage("password should be more than 5"),
-    check("dob").isEmpty().isDate().withMessage("invalid date"),
-  ],
+  // [
+  //   check("name")
+  //     .isEmpty()
+  //     .not()
+  //     .matches(
+  //       /^([a-zA-Z]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)/
+  //     )
+  //     .withMessage("invalid name"),
+  //   check("nic").isEmpty().not().withMessage("invalid nic"),
+  //   check("email").isEmail().withMessage("invalid email"),
+  //   check("password")
+  //     .isEmpty()
+  //     .isLength({ min: 5 })
+  //     .withMessage("password should be more than 5"),
+  //   check("dob").isEmpty().isDate().withMessage("invalid date"),
+  // ],
   auth.isNicExist,
   auth.signup
 );

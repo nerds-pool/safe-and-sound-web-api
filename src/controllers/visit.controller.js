@@ -2,6 +2,7 @@
  * @module controller/visit
  * @requires module:model/visit
  * @requires module:model/user
+ * @requires module:model/location
  */
 
 const Visit = require("../models/visit.model");

@@ -94,16 +94,17 @@ exports.getCovidPositiveUsers = async (req, res) => {
  * @returns {object} HTTP response
  */
 exports.updateUserHealthStatus = async (req, res) => {
-  if (!req.profile)
-    return res.status(400).json({
-      result: null,
-      success: false,
-      msg: "Invalid request",
-    });
-
-  const { testStatus, issuedBy, issuedDate, testedDate, testType } = req.body;
-  const { _id: id } = req.profile;
   try {
+    if (!req.profile)
+      return res.status(400).json({
+        result: null,
+        success: false,
+        msg: "Invalid request",
+      });
+
+    const { testStatus, issuedBy, issuedDate, testedDate, testType } = req.body;
+    const { _id: id } = req.profile;
+
     const result = await User.findByIdAndUpdate(
       id,
       {
@@ -158,16 +159,16 @@ exports.updateUserHealthStatus = async (req, res) => {
  * @returns {object} HTTP response
  */
 exports.deleteUserByNic = async (req, res) => {
-  if (!req.profile)
-    return res.status(400).json({
-      result: null,
-      success: false,
-      msg: "Invalid request",
-    });
-
-  const { _id: id } = req.profile;
-
   try {
+    if (!req.profile)
+      return res.status(400).json({
+        result: null,
+        success: false,
+        msg: "Invalid request",
+      });
+
+    const { _id: id } = req.profile;
+
     const result = await User.findByIdAndDelete(id);
     if (!result) {
       return res.status(400).json({

@@ -53,11 +53,11 @@ app.all("*", (req, res) => {
 });
 
 // Server instance
-const PORT = process.env.PORT ?? 8000;
-app.listen(PORT, () =>
-  console.log(
-    `⚡ [server] Server is running on ${PORT} in ${process.env.NODE_ENV} mode`
-  )
-);
+// const PORT = process.env.PORT ?? 8000;
+// app.listen(PORT, () =>
+//   console.log(
+//     `⚡ [server] Server is running on ${PORT} in ${process.env.NODE_ENV} mode`
+//   )
+// );
 
 module.exports.handler = serverless(app);

@@ -8,6 +8,7 @@
 const User = require("../models/user.model");
 const { validationResult } = require("express-validator");
 const { signJWT } = require("../helpers/JWTEngine");
+const expressJwt = require("express-jwt");
 /**
  * Sign up user to api [USER]
  * @param {object} req HTTP request
@@ -16,18 +17,22 @@ const { signJWT } = require("../helpers/JWTEngine");
  * @returns {object} HTTP response
  */
 exports.signup = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({
-      result: errors.array(),
-      success: false,
-      msg: "validation failed",
-    });
-  }
-
-  const user = new User(req.body);
-
   try {
+    // const errors = validationResult(req);
+    // console.log("Validation Errors", errors.array());
+
+    // if (!errors.isEmpty()) {
+    //   return res.status(422).json({
+    //     result: errors.array()[0].msg,
+    //     success: false,
+    //     msg: "validation failed",
+    //   });
+    // }
+
+    const user = new User(req.body);
+
+    console.log("user", user);
+
     const result = await user.save();
 
     if (!result)
@@ -58,9 +63,8 @@ exports.signup = async (req, res) => {
  * @returns {object} HTTP response
  */
 exports.signin = async (req, res) => {
-  const { nic, password } = payload;
-
   try {
+    const { nic, password } = req.body;
     const user = await User.findOne({ nic });
 
     if (!user || !user.authenticate(password))
