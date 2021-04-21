@@ -1,9 +1,13 @@
 /**
  * @module controller/user
  * @requires module:model/user
+ * @requires module:model/test
+ * @requires module:model/visit
  */
 
 const User = require("../models/user.model");
+const Test = require("../models/test.model");
+const Visit = require("../models/visit.model");
 
 /**
  * Extract user nic from the url
@@ -35,31 +39,18 @@ exports.getUser = (req, res, next, nic) => {
  * @asyn
  * @returns {object} HTTP response
  */
-exports.getUserByNic = async (req, res) => {
-  try {
-    const { result, success } = await getUser(
-      req.params.nic
-    );
-    if (!success) {
-      return res.status(400).json({
-        result,
-        success,
-        msg: "Error on my end with request",
-      });
-    }
-    return res.status(200).json({
-      result,
-      success,
-      msg: "OK",
+exports.getUserByNic = (req, res) => {
+  if (!req.profile)
+    return res.status(400).json({
+      result: null,
+      success: false,
+      msg: "Invalid request",
     });
-
-  } catch (error) {
-    return res.status(500).jason({
-      msg:"Internal server error on getSerbyId",
-      err:error.message,
-      success:false,
-    });
-  }
+  return res.status(200).json({
+    result: req.profile,
+    success: true,
+    msg: "User fetch success",
+  });
 };
 
 /**
@@ -71,27 +62,26 @@ exports.getUserByNic = async (req, res) => {
  */
 exports.getCovidPositiveUsers = async (req, res) => {
   try {
-    const { result, success } = await User(
-      
-    );
-    if (!success) {
+    const result = await User.find({ healthStatus: "positive" })
+      .select("-salt -encry_password")
+      .sort({ updatedAt: -1 });
+
+    if (!result)
       return res.status(400).json({
-        result,
-        success,
-        msg: "Error on my end with request",
+        result: null,
+        success: false,
+        msg: "Covid positive users fetch failed",
       });
-    }
     return res.status(200).json({
       result,
-      success,
-      msg: "OK",
+      success: true,
+      msg: "Covid positive users fetch success",
     });
-
   } catch (error) {
     return res.status(500).jason({
-      msg:"Internal server error on getSerbyId",
-      err:error.message,
-      success:false,
+      result: error.message,
+      success: false,
+      msg: "Internal server error",
     });
   }
 };
@@ -104,8 +94,60 @@ exports.getCovidPositiveUsers = async (req, res) => {
  * @returns {object} HTTP response
  */
 exports.updateUserHealthStatus = async (req, res) => {
+  if (!req.profile)
+    return res.status(400).json({
+      result: null,
+      success: false,
+      msg: "Invalid request",
+    });
+
+  const { testStatus, issuedBy, issuedDate, testedDate, testType } = req.body;
+  const { _id: id } = req.profile;
   try {
-  } catch (error) {}
+    const result = await User.findByIdAndUpdate(
+      id,
+      {
+        $set: { healthStatus: testStatus },
+      },
+      { new: true }
+    );
+
+    if (!result)
+      return res.status(400).json({
+        result: null,
+        success: false,
+        msg: "User health status update failed",
+      });
+
+    const test = new Test({
+      owner: id,
+      result: testStatus,
+      issuedBy,
+      issuedDate,
+      testedDate,
+      testType,
+    });
+
+    const testRes = await test.save();
+
+    if (!testRes)
+      return res.status(400).json({
+        result: null,
+        success: false,
+        msg: "User test result update failed",
+      });
+    return res.status(200).json({
+      result: { testId: testRes._id },
+      success: true,
+      msg: "User test result update success",
+    });
+  } catch (error) {
+    return res.status(500).jason({
+      result: error.message,
+      success: false,
+      msg: "Internal server error",
+    });
+  }
 };
 
 /**
@@ -116,7 +158,53 @@ exports.updateUserHealthStatus = async (req, res) => {
  * @returns {object} HTTP response
  */
 exports.deleteUserByNic = async (req, res) => {
-  try {
-  } catch (error) {}
-};
+  if (!req.profile)
+    return res.status(400).json({
+      result: null,
+      success: false,
+      msg: "Invalid request",
+    });
 
+  const { _id: id } = req.profile;
+
+  try {
+    const result = await User.findByIdAndDelete(id);
+    if (!result) {
+      return res.status(400).json({
+        result: null,
+        success: false,
+        msg: "User deletion failed",
+      });
+    }
+
+    const testResult = await Test.findOneAndDelete({ owner: id });
+    if (!testResult) {
+      return res.status(400).json({
+        result: null,
+        success: false,
+        msg: "User tests deletion failed",
+      });
+    }
+
+    const visitResult = await Visit.findOneAndDelete({ user: id });
+    if (!visitResult) {
+      return res.status(400).json({
+        result: null,
+        success: false,
+        msg: "User visits deletion failed",
+      });
+    }
+
+    return res.status(200).json({
+      result: null,
+      success: true,
+      msg: "User deletion success",
+    });
+  } catch (error) {
+    return res.status(500).jason({
+      result: error.message,
+      success: false,
+      msg: "Internal server error",
+    });
+  }
+};

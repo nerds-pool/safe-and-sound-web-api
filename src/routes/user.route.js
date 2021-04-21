@@ -19,7 +19,7 @@ router.param("nic", isSignedIn, user.getUser);
  * @name get/fetchUserByNic
  * @example {base-url}/user/fetch/19942356921
  */
-router.get("/fetch/:nic", isSignedIn, user.getUserByNic);
+router.get("/fetch/:nic", user.getUser, isSignedIn, user.getUserByNic);
 
 /**
  * Fetch covid positive users [CDC]
@@ -35,6 +35,7 @@ router.get("/covid-positive", isSignedIn, isCDC, user.getCovidPositiveUsers);
  */
 router.put(
   "/health-status/:nic",
+  user.getUser,
   isSignedIn,
   isPHI,
   user.updateUserHealthStatus
@@ -45,6 +46,12 @@ router.put(
  * @name delete/user
  * @example {base-url}/user/delete/19942356921
  */
-router.delete("/delete/:nic", isSignedIn, isCDC, user.deleteUserByNic);
+router.delete(
+  "/delete/:nic",
+  user.getUser,
+  isSignedIn,
+  isCDC,
+  user.deleteUserByNic
+);
 
 module.exports = router;
