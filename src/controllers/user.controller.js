@@ -54,6 +54,47 @@ exports.getUserByNic = (req, res) => {
 };
 
 /**
+ * Fetch User test results [User]
+ * @param {object} req HTTP request
+ * @param {object} res HTTP response
+ * @async
+ * @returns {object} HTTP response
+ */
+exports.getUserTestResultsByNic = async (req, res) => {
+  try {
+    if (!req.profile)
+      return res.status(400).json({
+        result: null,
+        success: false,
+        msg: "Invalid request",
+      });
+
+    const { _id: id } = req.profile;
+
+    const result = await Test.find({ owner: id }).sort({ createdAt: -1 });
+
+    if (!result)
+      return res.status(400).json({
+        result: null,
+        success: false,
+        msg: "Fetch tests failed",
+      });
+
+    return res.status(200).json({
+      result,
+      success: true,
+      msg: "Fetch tests success",
+    });
+  } catch (error) {
+    return res.status(500).jason({
+      result: error.message,
+      success: false,
+      msg: "Internal server error",
+    });
+  }
+};
+
+/**
  * Fetch COVID positive users [CDC]
  * @param {object} req HTTP request
  * @param {object} res HTTP response

@@ -22,6 +22,18 @@ router.param("nic", isSignedIn, user.getUser);
 router.get("/fetch/:nic", user.getUser, isSignedIn, user.getUserByNic);
 
 /**
+ * Fetch user test results by nic [User]
+ * @name get/fetchUserTestResultsByNic
+ * @example {base-url}/user/tests/19942356921
+ */
+router.get(
+  "/tests/:nic",
+  user.getUser,
+  isSignedIn,
+  user.getUserTestResultsByNic
+);
+
+/**
  * Fetch covid positive users [CDC]
  * @name get/covidPositiveUsers
  * @example {base-url}/user/covid-positive

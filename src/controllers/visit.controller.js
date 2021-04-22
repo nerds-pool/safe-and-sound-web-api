@@ -59,6 +59,45 @@ exports.addVisitedLocation = async (req, res) => {
 };
 
 /**
+ * Add a visited location [USER]
+ * @param {object} req HTTP request
+ * @param {object} res HTTP response
+ * @async
+ * @returns {object} HTTP response
+ */
+exports.checkoutVisitedLocation = async (req, res) => {
+  const { nic, visitId, departure } = req.body;
+
+  try {
+    const result = Visit.findByIdAndUpdate(
+      visitId,
+      {
+        $set: { departure },
+      },
+      { new: true }
+    );
+    if (!result)
+      return res.status(422).json({
+        result: null,
+        success: false,
+        msg: "Invalid checkout data",
+      });
+
+    return res.status(200).json({
+      result: result._id,
+      success: true,
+      msg: "Checkout success",
+    });
+  } catch (error) {
+    return res.status(500).jason({
+      result: error.message,
+      success: false,
+      msg: "Internal server error",
+    });
+  }
+};
+
+/**
  * Fetch associates of positive user by user nic [CDC]
  * @param {object} req HTTP request
  * @param {object} res HTTP response

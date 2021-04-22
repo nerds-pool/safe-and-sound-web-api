@@ -24,4 +24,11 @@ router.get("/:nic", getUser, visit.getVisitAssociatesByUserNic);
  */
 router.put("/add", isSignedIn, visit.addVisitedLocation);
 
+/**
+ * Add a visited location [USER]
+ * @name put/checkoutVisitedLocation
+ * @example endpoint => {base-url}/visit/checkout
+ */
+router.patch("/checkout", isSignedIn, visit.checkoutVisitedLocation);
+
 module.exports = router;
