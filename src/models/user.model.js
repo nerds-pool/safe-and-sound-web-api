@@ -13,6 +13,10 @@ const userSchema = new mongoose.Schema(
       unique: true,
       require: true,
     },
+    phiRegNo: {
+      type: String,
+      trim: true,
+    },
     contact: {
       type: String,
       unique: true,
@@ -51,6 +55,7 @@ const userSchema = new mongoose.Schema(
       enum: [0, 49, 99],
       default: 0,
     },
+    salt: String,
   },
   { timestamps: true }
 );
@@ -79,12 +84,15 @@ userSchema.methods = {
         .update(plainPass)
         .digest("hex");
     } catch (err) {
+      console.log("Error", err);
       return "";
     }
   },
 
   authenticate: function (plainPass) {
-    return this.securePassword(plainPass) === this.encry_password;
+    console.log("enter 1", this.securePassword(plainPass));
+    console.log("enter 2", this.encry_password);
+    return this.securePassword(plainPass.toString()) === this.encry_password;
   },
 };
 

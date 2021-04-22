@@ -67,6 +67,9 @@ exports.signin = async (req, res) => {
     const { nic, password } = req.body;
     const user = await User.findOne({ nic });
 
+    console.log("user", user);
+    console.log("user auth", user.authenticate(password.toString()));
+
     if (!user || !user.authenticate(password))
       return res.status(401).json({
         result: null,
