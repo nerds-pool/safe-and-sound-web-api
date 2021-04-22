@@ -12,7 +12,7 @@ const { isSignedIn, isPHI, isCDC } = require("../controllers/auth.controller");
  * Extract user nic from the url
  * @name param/extractNic
  */
-router.param("nic", isSignedIn, user.getUser);
+router.param("nic", user.getUser);
 
 /**
  * Fetch user by nic [CDC|PHI]
