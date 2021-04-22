@@ -45,7 +45,7 @@ exports.addVisitedLocation = async (req, res) => {
       });
 
     return res.status(200).json({
-      result,
+      result: result._id,
       success: true,
       msg: "Location update success",
     });
