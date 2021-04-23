@@ -94,8 +94,10 @@ exports.addVisitedLocation = async (req, res) => {
 exports.checkoutVisitedLocation = async (req, res) => {
   const { nic, visitId, departure } = req.body;
 
+  console.log({ nic, visitId, departure });
+
   try {
-    const result = Visit.findByIdAndUpdate(
+    const result = await Visit.findByIdAndUpdate(
       visitId,
       {
         $set: { departure },
@@ -108,6 +110,8 @@ exports.checkoutVisitedLocation = async (req, res) => {
         success: false,
         msg: "Invalid checkout data",
       });
+
+    console.log("result", result);
 
     return res.status(200).json({
       result: result._id,

@@ -86,7 +86,7 @@ exports.getUserTestResultsByNic = async (req, res) => {
       msg: "Fetch tests success",
     });
   } catch (error) {
-    return res.status(500).jason({
+    return res.status(500).json({
       result: error.message,
       success: false,
       msg: "Internal server error",

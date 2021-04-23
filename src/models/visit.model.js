@@ -12,7 +12,10 @@ const visitSchema = new mongoose.Schema(
       ref: "Location",
     },
     arrival: Date,
-    departure: Date,
+    departure: {
+      type: Date,
+      default: Date.now(),
+    },
   },
   { timestamps: true }
 );
