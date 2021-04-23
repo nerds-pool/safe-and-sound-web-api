@@ -41,6 +41,7 @@ const userSchema = new mongoose.Schema(
     },
     profession: {
       type: String,
+      default: "Public Health Officer",
     },
     affiliation: {
       type: String,

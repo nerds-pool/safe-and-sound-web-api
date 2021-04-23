@@ -11,6 +11,29 @@ const Test = require("../models/test.model");
 const Location = require("../models/location.model");
 
 /**
+ * Extract user nic from the url
+ * @param {object} req HTTP request
+ * @param {object} res HTTP response
+ * @param {function} next
+ * @param {string} nic Url encoded user nic
+ * @returns {object} HTTP response
+ */
+exports.getUser = (req, res, next, nic) => {
+  User.findOne({ nic })
+    .select("-salt -encry_password")
+    .then((user) => {
+      req.profile = user;
+      next();
+    })
+    .catch((err) => {
+      res.status(422).json({
+        msg: "NO USER WAS FOUND",
+        err: err,
+      });
+    });
+};
+
+/**
  * Add a visited location [USER]
  * @param {object} req HTTP request
  * @param {object} res HTTP response
@@ -45,7 +68,10 @@ exports.addVisitedLocation = async (req, res) => {
       });
 
     return res.status(200).json({
-      result: result._id,
+      result: {
+        visit: result._id,
+        location: { name: locationRes.name, city: locationRes.address.city },
+      },
       success: true,
       msg: "Location update success",
     });

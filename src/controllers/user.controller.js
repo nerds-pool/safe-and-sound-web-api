@@ -210,32 +210,9 @@ exports.deleteUserByNic = async (req, res) => {
 
     const { _id: id } = req.profile;
 
-    const result = await User.findByIdAndDelete(id);
-    if (!result) {
-      return res.status(400).json({
-        result: null,
-        success: false,
-        msg: "User deletion failed",
-      });
-    }
-
-    const testResult = await Test.findOneAndDelete({ owner: id });
-    if (!testResult) {
-      return res.status(400).json({
-        result: null,
-        success: false,
-        msg: "User tests deletion failed",
-      });
-    }
-
-    const visitResult = await Visit.findOneAndDelete({ user: id });
-    if (!visitResult) {
-      return res.status(400).json({
-        result: null,
-        success: false,
-        msg: "User visits deletion failed",
-      });
-    }
+    await User.findByIdAndDelete(id);
+    await Test.findOneAndDelete({ owner: id });
+    await Visit.findOneAndDelete({ user: id });
 
     return res.status(200).json({
       result: null,
